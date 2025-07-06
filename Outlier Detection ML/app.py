@@ -1,5 +1,4 @@
 from shiny import App, ui, reactive
-from shinywidgets import output_widget, render_widget
 
 # Header
 header = ui.page_navbar(
@@ -15,7 +14,7 @@ source_options = ["SQL", "Oracle", "GCP"]
 db_sources = ui.card(
                         ui.input_select("source", "Select Source", source_options, multiple=False),
                         ui.output_ui("db_inputs")
-                    )
+                     )
 
 # Card to upload files
 upload_file = ui.card(
