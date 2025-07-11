@@ -2,6 +2,9 @@
 .venv/
 venv/
 
+# Do not load data
+data/
+
 # VS Code settings
 .vscode/
 
