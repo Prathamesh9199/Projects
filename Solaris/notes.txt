@@ -1,7 +1,14 @@
+Plan
+- create translucent ui for chatbot [Done]
+- take screenshot pass it to llm and ask for steps to take to perform an action.
+    - download llava model
+    - build langchain agent 
+        tools:
+            - take screenshot and pass to llm with user query      
+
 Ideas for tools:
 1. File organizer: ask and organize files in proper folders
 2. Web search: visit websites (ask for credentials if required)
-
 
 Future:
 1. Speech to Text & Text to Speech for interaction
