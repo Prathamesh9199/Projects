@@ -1,6 +1,6 @@
 # Project Solaris
 ## Aim
-Our project aims to develop a Local Agentic AI Assistant that can understand and process human language while also having the capability of accessing laptop hardware and all installed software. This tool will be designed using Python Langchain for natural language processing, Ollama for local large language models, and more to come in future updates!
+Our project aims to develop a Local Agentic AI Assistant that can understand and process human language while also having the capability of accessing laptop hardware and all installed software. This tool will be designed using LLM for natural language processing, Python LangGraph for Agent, Ollama for local large language models, and more to come in future updates!
 
 ## Capabilities
 - **Speak & Understand Human Language**: The AI can understand human language effectively, making it an excellent assistant to aid with tasks ranging from simple queries to complex programming.
