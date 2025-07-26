@@ -5,6 +5,9 @@ venv/
 # Do not load data
 data/
 
+# Do not load notes
+notes/
+
 # VS Code settings
 .vscode/
 
