@@ -13,13 +13,15 @@ def clean_text(text):
 # Combine all texts into a single cleaned file
 combined_text = ""
 
-for filename in sorted(os.listdir("data")):
+folder_path = "data\\processed_books"
+
+for filename in sorted(os.listdir(folder_path)):
     if filename.endswith(".txt"):
-        with open(os.path.join("data", filename), "r", encoding="utf-8") as f:
+        with open(os.path.join(folder_path, filename), "r", encoding="utf-8") as f:
             raw_text = f.read()
             cleaned = clean_text(raw_text)
             combined_text += cleaned + "\n\n"  # Add spacing between books
 
 # Save final cleaned text to one file
-with open("cleaned_combined_books.txt", "w", encoding="utf-8") as f:
+with open("data\\cleaned_combined_books.txt", "w", encoding="utf-8") as f:
     f.write(combined_text)
