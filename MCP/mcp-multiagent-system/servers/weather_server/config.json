@@ -1,0 +1,14 @@
+{
+    "schema": "1.0",
+    "agent": {
+        "name": "weather_server",
+        "description": "Handles basic weather requests: rain check & temperature"
+    },
+    "tools": [
+        "tools\\rain.py",
+        "tools\\temperature.py"
+    ],
+    "transport": {
+        "type": "stdio"
+    }
+}

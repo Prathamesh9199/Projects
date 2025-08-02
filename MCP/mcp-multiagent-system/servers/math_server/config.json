@@ -1,0 +1,14 @@
+{
+    "schema": "1.0",
+    "agent": {
+        "name": "math_server",
+        "description": "Handles basic arithmatic operations: addition & subtraction"
+    },
+    "tools": [
+        "tools\\add.py",
+        "tools\\subtract.py"
+    ],
+    "transport": {
+        "type": "stdio"
+    }
+}
