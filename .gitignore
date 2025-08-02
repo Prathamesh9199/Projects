@@ -4,6 +4,7 @@ venv/
 
 # Do not load data
 data/
+Datasets/
 
 # Do not load notes
 notes/

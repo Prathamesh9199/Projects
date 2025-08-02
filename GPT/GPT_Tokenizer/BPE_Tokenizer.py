@@ -1,9 +1,10 @@
 class BPETokenizer:
-    def __init__(self, text: str):
+    def __init__(self, text: str, iterations = 50):
         self.text = text
         self.char_to_idx = {}
         self.idx_to_char = {}
         self._create_vocab()
+        self.iterations = iterations
 
     def _create_vocab(self):
         for idx, char in enumerate(list(set(self.text))):
@@ -11,12 +12,22 @@ class BPETokenizer:
             self.char_to_idx[unicode_code_point] = idx
             self.idx_to_char[idx] = unicode_code_point
 
-    def encode(self, text: str) -> list:
+    def encode(self, text: str, char_to_idx = None) -> list:
         byte_text = text.encode('utf-8')
-        return [self.char_to_idx[bytes([b])] for b in byte_text]
 
-    def decode(self, unicode_code_point_list: list) -> str:
-        byte_seq = b''.join([self.idx_to_char[idx] for idx in unicode_code_point_list])
+        if char_to_idx:
+            unicode_points = [char_to_idx[bytes([b])] for b in byte_text]
+        else:
+            unicode_points = [self.char_to_idx[bytes([b])] for b in byte_text]
+        return unicode_points
+
+    def decode(self, unicode_code_point_list: list, idx_to_char = None) -> str:
+
+        if idx_to_char:
+            byte_seq = b''.join([idx_to_char[idx] for idx in unicode_code_point_list])
+        else:
+            byte_seq = b''.join([self.idx_to_char[idx] for idx in unicode_code_point_list])
+        
         return byte_seq.decode('utf-8')
 
     def _get_stats(self, unicode_code_point_list: list) -> dict:
@@ -58,8 +69,16 @@ class BPETokenizer:
         raw_text_token_count = len(unicode_code_point_list)
 
         flag = True
-        while flag:
+        i = 0
+        while flag and i < self.iterations:
+            print(f"Iteration: {i+1}")
             unicode_code_point_list, flag = self._merge(unicode_code_point_list)
+            print(f"char_to_idx: {len(self.char_to_idx)} | idx_to_char: {len(self.idx_to_char)}")
+            print("==============================================================================")
+            i += 1
+
+        if flag and self.iterations > 1:
+            print('Iterations completed')
 
         processed_text_token_count = len(unicode_code_point_list)
         final_vocab_size = len(self.idx_to_char)
@@ -71,4 +90,4 @@ class BPETokenizer:
         print(f"total tokens after bpe: {processed_text_token_count}")
         print(f"compression ratio: {compression_ratio}")
 
-        return unicode_code_point_list
+        return unicode_code_point_list, self.idx_to_char, self.char_to_idx
