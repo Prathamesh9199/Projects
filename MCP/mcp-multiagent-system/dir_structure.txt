@@ -1,5 +1,6 @@
 mcp-multiagent-system/
 ├── README.MD
+├── requirements.txt
 ├── clients
 │   ├── __init_.py
 │   ├── math_client
@@ -16,7 +17,6 @@ mcp-multiagent-system/
 │   │   └── build_graph.py
 │   ├── main.py
 │   └── prompts.txt
-├── requirements.txt
 ├── servers
 │   ├── math_server
 │   │   ├── __init__.py
@@ -45,4 +45,3 @@ mcp-multiagent-system/
 │   └── utils.py
 └── test
     └── test_math_server.py
-    └── test_weather_server.py
