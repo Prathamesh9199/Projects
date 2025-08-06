@@ -11,13 +11,15 @@ GraphRAG (Graph-based Retrieval-Augmented Generation) is an extension of traditi
 ## Requirements
 
 GraphRAG requires Python 3.10 to 3.12 (GraphRAG is not compatible with 3.13+). To get started, install the graphrag Python package using pip:
+```
 pip install graphrag
-
+```
 ## Initialization & Config Setup
 
 Create a project directory and place your .txt, .csv, or other supported files under a folder named "input". Then, initialize GraphRAG in your project directory. This will create the necessary configuration files:\
+```
 graphrag init --root ./your_project
-
+```
 This will generate two files for you in your project directory:
 - .env file for API credentials
 - settings.yaml for config
@@ -33,7 +35,9 @@ If you're using Azure OpenAI, remember to update the 'model' section of the sett
 ## Indexing (Build Knowledge Graph)
 
 Run the following command in your terminal to build the index:\
+```
 graphrag index --root ./your_project
+```
 
 This performs:
 
@@ -48,18 +52,22 @@ Artifacts are saved to ./your_project/output/
 Global Search:
 
 Run the following command in your terminal to perform a global search:\
+```
 graphrag query --root ./your_project --method global --query "What are the top themes?"
+```
 
 Local Search:
 
 Run the following command in your terminal to perform a local search:\
+```
 graphrag query --root ./your_project --method local --query "Who is Scrooge?"
-
+```
 DRIFT Search:
 
 Run the following command in your terminal to perform a DRIFT search:\
+```
 graphrag query --root ./your_project --method drift --query "Explain the main topics around X"
-
+```
 Other available method: basic (vector-only search)
 
 ## Visualization Guide
@@ -67,12 +75,14 @@ Other available method: basic (vector-only search)
 To generate and visualize a GraphML file, follow these steps:
 
 1. Enable snapshot generation in your settings.yaml file:\
+<pre>
 snapshots:
-graphml: true
+    graphml: true
 embed_graph:
-enabled: true
+    enabled: true
 umap:
-enabled: true
+    enabled: true
+</pre>
 
 2. Re-run graphrag index to generate the graph.graphml file in the output directory.
 
