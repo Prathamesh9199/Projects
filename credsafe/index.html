@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Folder Entity Manager (Frontend Only)</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<div class="container my-4">
+  <h2 class="text-center">Folder-Based Entity Manager</h2>
+
+  <!-- Search Bar -->
+  <div class="row mb-3">
+    <div class="col-md-8">
+      <input type="text" id="searchInput" class="form-control" placeholder="Search by folder, name, or key/value..." oninput="renderAccordion()">
+    </div>
+    <div class="col-md-4 text-end">
+      <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#entityModal" onclick="openCreateModal()">+ Add New</button>
+    </div>
+  </div>
+
+  <!-- Accordion to Display Data -->
+  <div class="accordion" id="folderAccordion"></div>
+</div>
+
+<!-- Modal for Add/Edit -->
+<div class="modal fade" id="entityModal" tabindex="-1" aria-labelledby="modalLabel">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalLabel">Add Entity</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="entityForm">
+          <input type="hidden" id="entityID">
+          
+          <div class="mb-3">
+            <label class="form-label">Folder Name</label>
+            <input list="folderList" class="form-control" id="folderName" placeholder="Select or type folder" required>
+            <datalist id="folderList"></datalist>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Name</label>
+            <input type="text" class="form-control" id="entityName" placeholder="Entity Name" required>
+          </div>
+
+          <div id="keyValueRows"></div>
+          <button type="button" class="btn btn-outline-success" onclick="addKeyValue()">+ Add Key-Value</button>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button class="btn btn-primary" onclick="saveEntity()">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// ---------------------
+// LocalStorage DB Setup
+// ---------------------
+if (!localStorage.getItem("db")) {
+  localStorage.setItem("db", JSON.stringify([]));
+}
+
+let data = JSON.parse(localStorage.getItem("db"));
+
+// ---------------------
+// Populate Folder Datalist
+// ---------------------
+function populateFolderList() {
+  const folderList = document.getElementById("folderList");
+  const folders = [...new Set(data.map(item => item.folder))];
+  folderList.innerHTML = folders.map(f => `<option value="${f}">`).join("");
+}
+
+// ---------------------
+// CRUD Functions
+// ---------------------
+function saveDB() {
+  localStorage.setItem("db", JSON.stringify(data));
+}
+
+function fetchEntities() {
+  data = JSON.parse(localStorage.getItem("db"));
+  renderAccordion();
+  populateFolderList();
+}
+
+// ---------------------
+// Render Accordion with Search
+// ---------------------
+function renderAccordion() {
+  const folderAccordion = document.getElementById("folderAccordion");
+  folderAccordion.innerHTML = "";
+  const search = document.getElementById("searchInput").value.toLowerCase();
+
+  const filteredData = data.filter(item => {
+    // Match folder, name, or any key/value
+    if(item.folder.toLowerCase().includes(search)) return true;
+    if(item.name?.toLowerCase().includes(search)) return true;
+    return Object.entries(item).some(([k,v]) => k!=="entityID" && k!=="folder" && k!=="name" && `${k}:${v}`.toLowerCase().includes(search));
+  });
+
+  const grouped = filteredData.reduce((acc, item) => {
+    acc[item.folder] = acc[item.folder] || [];
+    acc[item.folder].push(item);
+    return acc;
+  }, {});
+
+  Object.keys(grouped).forEach((folder, idx) => {
+    const items = grouped[folder];
+    folderAccordion.innerHTML += `
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="heading${idx}">
+          <button class="accordion-button ${idx !== 0 ? 'collapsed' : ''}" data-bs-toggle="collapse" data-bs-target="#collapse${idx}">
+            ${folder}
+          </button>
+        </h2>
+        <div id="collapse${idx}" class="accordion-collapse collapse ${idx === 0 ? 'show' : ''}">
+          <div class="accordion-body">
+            <div class="row g-3">
+              ${items.map(renderCardColumn).join("")}
+            </div>
+          </div>
+        </div>
+      </div>`;
+  });
+}
+
+// Render individual card inside a col
+function renderCardColumn(item) {
+  const keys = Object.entries(item)
+    .filter(([key]) => key !== "entityID" && key !== "folder" && key !== "name")
+    .map(([key, value]) => `<p><strong>${key}:</strong> ${value}</p>`)
+    .join("");
+
+  return `
+    <div class="col-md-3">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title">${item.name || ""}</h5>
+          <h6 class="card-subtitle mb-2 text-muted">Folder: ${item.folder}</h6>
+          ${keys}
+          <button class="btn btn-sm btn-warning" onclick='openEditModal(${JSON.stringify(item)})'>Edit</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteEntity('${item.entityID}')">Delete</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ---------------------
+// Add / Edit Modal
+// ---------------------
+function openCreateModal() {
+  document.getElementById("modalLabel").innerText = "Add Entity";
+  document.getElementById("entityForm").reset();
+  document.getElementById("entityID").value = "";
+  document.getElementById("keyValueRows").innerHTML = "";
+  addKeyValue();
+  populateFolderList();
+}
+
+function openEditModal(item) {
+  document.getElementById("modalLabel").innerText = "Edit Entity";
+  document.getElementById("entityID").value = item.entityID;
+  document.getElementById("folderName").value = item.folder;
+  document.getElementById("entityName").value = item.name || "";
+
+  const container = document.getElementById("keyValueRows");
+  container.innerHTML = "";
+  Object.entries(item).forEach(([key, value]) => {
+    if(key !== "entityID" && key !== "folder" && key !== "name") addKeyValue(key, value);
+  });
+
+  new bootstrap.Modal(document.getElementById("entityModal")).show();
+}
+
+// Add key-value row
+function addKeyValue(key="", value="") {
+  const div = document.createElement("div");
+  div.className = "row g-2 mb-2";
+  div.innerHTML = `
+    <div class="col"><input class="form-control" placeholder="Key" value="${key}" /></div>
+    <div class="col"><input class="form-control" placeholder="Value" value="${value}" /></div>
+    <div class="col-1"><button class="btn btn-danger" onclick="this.parentElement.parentElement.remove()">-</button></div>`;
+  document.getElementById("keyValueRows").appendChild(div);
+}
+
+// Save Entity (Add or Update)
+function saveEntity() {
+  const id = document.getElementById("entityID").value || Date.now().toString();
+  const folder = document.getElementById("folderName").value.trim();
+  const name = document.getElementById("entityName").value.trim();
+  const pairs = Array.from(document.querySelectorAll("#keyValueRows .row")).map(row => {
+    const inputs = row.querySelectorAll("input");
+    return { key: inputs[0].value, value: inputs[1].value };
+  });
+
+  const entity = { entityID: id, folder, name, ...Object.fromEntries(pairs.map(p => [p.key, p.value])) };
+
+  const index = data.findIndex(x => x.entityID === id);
+  if(index > -1) data[index] = entity;
+  else data.push(entity);
+
+  saveDB();
+  fetchEntities();
+  bootstrap.Modal.getInstance(document.getElementById("entityModal")).hide();
+}
+
+// Delete Entity
+function deleteEntity(id) {
+  if(confirm("Delete this record?")) {
+    data = data.filter(item => item.entityID !== id);
+    saveDB();
+    fetchEntities();
+  }
+}
+
+// Initialize
+document.addEventListener("DOMContentLoaded", fetchEntities);
+</script>
+
+</body>
+</html>

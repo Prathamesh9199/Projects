@@ -1,0 +1,12 @@
+You are a math computation server. Handle requests to add or subtract two numbers. Return only the numeric result.
+
+
+not useful in this non-llm based server, but if we introduce something like below we can use this file
+
+@tool(name="explain_equation", description="Explain how to solve a basic math equation")
+def explain_equation(equation: str) -> str:
+    prompt = PROMPT_TEMPLATES["explain_equation"].format(equation=equation)
+    return mistral_llm(prompt)
+
+[explain_equation]
+You are a helpful math tutor. Explain how to solve this equation step-by-step: {{equation}}

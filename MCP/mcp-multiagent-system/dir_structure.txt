@@ -1,0 +1,47 @@
+mcp-multiagent-system/
+├── README.MD
+├── requirements.txt
+├── clients
+│   ├── __init_.py
+│   ├── math_client
+│   │   ├── __init__.py
+│   │   └── main.py
+│   └── weather_client
+│       ├── __init__.py
+│       └── main.py
+├── host
+│   ├── __init__.py
+│   ├── config.json
+│   ├── graph
+│   │   ├── __init__.py
+│   │   └── build_graph.py
+│   ├── main.py
+│   └── prompts.txt
+├── servers
+│   ├── math_server
+│   │   ├── __init__.py
+│   │   ├── config.json
+│   │   ├── main.py
+│   │   ├── prompts
+│   │   │   └── prompts.txt
+│   │   ├── resources
+│   │   │   └── constants.py
+│   │   └── tools
+│   │       ├── add.py
+│   │       ├── area_of_circle.py
+│   │       └── subtract.py
+│   └── weather_server
+│       ├── __init__.py
+│       ├── config.json
+│       ├── main.py
+│       ├── prompts
+│       │   └── prompts.txt
+│       ├── resources
+│       │   └── city_list.py
+│       └── tools
+│           ├── rain.py
+│           └── temperature.py
+├── shared
+│   └── utils.py
+└── test
+    └── test_math_server.py
